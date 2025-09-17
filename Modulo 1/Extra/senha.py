@@ -1,0 +1,1 @@
+minha_senha="Mary10Jayne"
