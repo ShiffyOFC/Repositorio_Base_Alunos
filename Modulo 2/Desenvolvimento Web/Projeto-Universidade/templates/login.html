@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Estilo para o container da animação de carregamento */
+        .loading-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .loading-spinner {
+            border: 8px solid #f3f3f3; /* Cor do fundo */
+            border-top: 8px solid #3498db; /* Cor da animação */
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1.5s linear infinite;
+        }
+
+        /* Definição da animação de rotação */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Estilo do formulário de login */
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+            display: none;  /* Inicialmente escondido */
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-group button:hover {
+            background-color: #45a049;
+        }
+
+        .alert {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Animação de Carregamento -->
+    <div class="loading-container" id="loading">
+        <div class="loading-spinner"></div>
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Formulário de Login -->
+    <div class="login-container" id="login-form">
+        <h2>Login</h2>
+
+        <!-- Exibe mensagem de erro caso haja -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert">
+                    {{ messages[0][1] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Formulário -->
+        <form action="/login" method="POST" id="login-form">
+            <div class="form-group">
+                <label for="usuario">Usuário:</label>
+                <input type="text" id="usuario" name="usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" id="senha" name="senha" required>
+            </div>
+            <div class="form-group">
+                <button type="submit">Entrar</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Função para esconder o carregamento e exibir o formulário de login
+        window.onload = function() {
+            // Esconde a animação de carregamento
+            document.getElementById('loading').style.display = 'none';
+            
+            // Exibe o formulário com um efeito de transição suave
+            const loginForm = document.getElementById('login-form');
+            loginForm.style.display = 'block';
+            setTimeout(() => {
+                loginForm.style.opacity = 1;
+            }, 300);
+        }
+
+        // Envia o formulário via JavaScript
+        document.getElementById('login-form').onsubmit = function(event) {
+            event.preventDefault();
+
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+
+            const data = {
+                usuario: usuario,
+                senha: senha
+            };
+
+            // Envia a requisição POST com o JSON
+            fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Sucesso:', data);
+                alert('Login realizado com sucesso!');
+            })
+            .catch((error) => {
+                console.error('Erro:', error);
+                alert('Erro no login. Tente novamente.');
+            });
+        };
+    </script>
+
+</body>
+</html>
